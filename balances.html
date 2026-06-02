@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>La Piraterie — Balances</title>
+  <meta name="description" content="Listing of player balances in alphabetical order." />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="topbar">
+    <div class="container topbar__inner">
+      <div class="brand">
+        <div class="brand__mark" aria-hidden="true">LP</div>
+        <div>
+          <div class="brand__name">La Piraterie</div>
+          <div class="brand__tag">Player balances</div>
+        </div>
+      </div>
+
+      <nav class="nav" aria-label="Primary">
+        <a href="index.html#features">Features</a>
+        <a href="index.html#commands">Commands</a>
+        <a href="index.html#status">Status</a>
+        <a class="btn btn--primary" href="balances.html">Balances</a>
+      </nav>
+
+      <button class="nav-toggle" type="button" aria-label="Open menu" aria-expanded="false" data-nav-toggle>
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <main id="main" class="section" style="padding-top:34px">
+    <div class="container">
+      <div class="section__head" style="margin-bottom:20px; align-items:flex-start;">
+        <div>
+          <h1 class="section__title" style="margin-bottom:6px; font-size:34px;">Balances</h1>
+          <p class="section__subtitle" id="generatedAtText">Loading…</p>
+        </div>
+      </div>
+
+      <div class="card" style="padding:16px; overflow:auto;">
+        <div style="display:flex; gap:12px; flex-wrap:wrap; align-items:center; justify-content:space-between; margin-bottom:12px;">
+          <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+            <input id="search" type="text" placeholder="Search player…" class="input" style="min-width:260px" />
+            <select id="sort" class="input" style="min-width:210px">
+              <option value="name">Sort: A → Z</option>
+              <option value="balance_desc">Balance: high → low</option>
+              <option value="balance_asc">Balance: low → high</option>
+            </select>
+          </div>
+
+          <div class="muted" style="font-weight:800;">Rows: <span id="rowCount">0</span></div>
+        </div>
+
+        <table class="table" role="table" aria-label="Player balances">
+          <thead>
+            <tr>
+              <th style="width:60%">Player</th>
+              <th style="width:40%">Balance</th>
+            </tr>
+          </thead>
+          <tbody id="rows">
+            <tr><td colspan="2" class="muted">Loading…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer__inner">
+      <div class="muted">© <span id="year"></span> La Piraterie</div>
+      <div class="footer__links">
+        <a href="index.html#features">Features</a>
+        <a href="index.html#commands">Commands</a>
+        <a href="index.html#status">Status</a>
+      </div>
+    </div>
+  </footer>
+
+  <div class="toast" role="status" aria-live="polite" aria-atomic="true" id="toast" hidden>
+    <div class="toast__icon" aria-hidden="true">✅</div>
+    <div class="toast__msg" id="toastMsg">Saved.</div>
+  </div>
+
+  <script src="script.js"></script>
+  <script src="balances.js"></script>
+</body>
+</html>
+

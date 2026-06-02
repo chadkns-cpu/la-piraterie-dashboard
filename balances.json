@@ -1,0 +1,9 @@
+{
+  "generatedAt": "2026-06-02T00:00:00.000Z",
+  "players": [
+    { "name": "Alice", "balance": 1500 },
+    { "name": "Bob", "balance": 200 },
+    { "name": "Charlie", "balance": 5000 }
+  ]
+}
+
