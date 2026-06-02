@@ -63,7 +63,7 @@ const escapeHtml = (s) => String(s)
 
 // Change BALANCES_API_URL to your API endpoint.
 // IMPORTANT: the endpoint must allow browser requests (CORS).
-const BALANCES_API_URL = 'https://control.katabump.com/server/9956fc2a';
+const BALANCES_API_URL = 'http://51.75.118.75:20313/api/stats';
 
 const load = async () => {
   try {
