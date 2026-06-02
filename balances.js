@@ -63,7 +63,10 @@ const escapeHtml = (s) => String(s)
 
 // Change BALANCES_API_URL to your API endpoint.
 // IMPORTANT: the endpoint must allow browser requests (CORS).
-const BALANCES_API_URL = 'http://51.75.118.75:20313/api/stats';
+const BALANCES_API_URL = 'https://control.katabump.com/server/9956fc2a';
+// Some APIs return a different shape (or require a proxy). We keep the UI resilient.
+// If your endpoint doesn’t return { players: [...] }, adjust the parsing below in `load()`.
+
 
 const load = async () => {
   try {
@@ -73,7 +76,19 @@ const load = async () => {
 
     // Expected JSON format:
     // { "players": [ {"name":"Alice","balance":1500}, ... ], "generatedAt":"..." }
-    const players = Array.isArray(data?.players) ? data.players : [];
+// Accept multiple shapes:
+    // - { players: [...] }
+    // - { data: [...] }
+    // - [...] (array directly)
+    const rawPlayers = Array.isArray(data?.players)
+      ? data.players
+      : Array.isArray(data?.data)
+        ? data.data
+        : Array.isArray(data)
+          ? data
+          : [];
+
+    const players = rawPlayers;
     state.players = players
       .map((p) => ({
         name: String(p?.name ?? ''),
@@ -101,5 +116,4 @@ if (searchEl) searchEl.addEventListener('input', render);
 if (sortEl) sortEl.addEventListener('change', render);
 
 load();
-
 
