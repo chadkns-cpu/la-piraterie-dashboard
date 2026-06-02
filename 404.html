@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Not Found - La Piraterie</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="container topbar__inner">
+      <div class="brand">
+        <div class="brand__mark" aria-hidden="true">LP</div>
+        <div>
+          <div class="brand__name">La Piraterie</div>
+          <div class="brand__tag">Dashboard</div>
+        </div>
+      </div>
+      <nav class="nav" aria-label="Primary">
+        <a href="index.html">Home</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="section" style="padding-top:34px">
+    <div class="container">
+      <div class="card" style="padding:20px">
+        <h1 style="margin:0 0 10px; font-size:32px">404</h1>
+        <p class="muted" style="margin:0 0 18px">This page doesn’t exist.</p>
+        <a class="btn btn--primary" href="index.html">Back to dashboard</a>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer__inner">
+      <div class="muted">© <span id="year"></span> La Piraterie</div>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
+

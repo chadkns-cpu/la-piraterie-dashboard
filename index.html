@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>La Piraterie</title>
+  <meta name="description" content="Dashboard for La Piraterie (Discord bot)." />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="topbar">
+    <div class="container topbar__inner">
+      <div class="brand">
+        <div class="brand__mark" aria-hidden="true">LP</div>
+        <div>
+          <div class="brand__name">La Piraterie</div>
+          <div class="brand__tag">Discord Bot Dashboard</div>
+        </div>
+      </div>
+
+      <nav class="nav" aria-label="Primary">
+        <a href="#features">Features</a>
+        <a href="#commands">Commands</a>
+        <a href="#status">Status</a>
+        <a class="btn btn--primary" href="#invite">Invite</a>
+      </nav>
+
+      <button class="nav-toggle" type="button" aria-label="Open menu" aria-expanded="false" data-nav-toggle>
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="hero">
+      <div class="container hero__grid">
+        <div>
+          <h1 class="hero__title">Welcome to your bot dashboard</h1>
+          <p class="hero__subtitle">
+            A clean, GitHub-Pages-ready dashboard page for <strong>La Piraterie</strong>.
+            Customize the sections below to match your bot.
+          </p>
+
+          <div class="hero__cta">
+            <a class="btn btn--primary" id="invite" href="#" onclick="alert('Replace this with your bot invite link!'); return false;">
+              Invite the bot
+            </a>
+            <a class="btn btn--ghost" href="#status">View status</a>
+          </div>
+
+          <div class="pill-row" role="list" aria-label="Highlights">
+            <div class="pill" role="listitem">⚙️ Moderation</div>
+            <div class="pill" role="listitem">🔔 Tickets</div>
+            <div class="pill" role="listitem">🛡️ Security</div>
+          </div>
+        </div>
+
+        <div class="card card--glow hero-card" aria-label="Quick overview card">
+          <div class="hero-card__top">
+            <div class="kpi">
+              <div class="kpi__label">Servers</div>
+              <div class="kpi__value" data-kpi="servers">—</div>
+            </div>
+            <div class="kpi">
+              <div class="kpi__label">Users</div>
+              <div class="kpi__value" data-kpi="users">—</div>
+            </div>
+            <div class="kpi">
+              <div class="kpi__label">Uptime</div>
+              <div class="kpi__value" data-kpi="uptime">—</div>
+            </div>
+          </div>
+          <div class="divider"></div>
+          <div class="hero-card__bottom">
+            <div class="muted">Tip: connect these stats to your bot API later.</div>
+            <div class="mini-actions">
+              <button class="chip" type="button" onclick="toast('Connect your bot API to show live stats.')">API</button>
+              <button class="chip" type="button" onclick="toast('Add command docs for your bot.')">Commands</button>
+              <button class="chip" type="button" onclick="toast('Add a real status endpoint if you want.')">Status</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="features" class="section">
+      <div class="container">
+        <h2 class="section__title">Features</h2>
+        <p class="section__subtitle">Everything you need to showcase what your bot does.</p>
+
+        <div class="grid-3">
+          <article class="feature">
+            <div class="feature__icon" aria-hidden="true">🧭</div>
+            <h3>Dashboard layout</h3>
+            <p>Hero, KPI card, feature tiles, command list, and a status section.</p>
+          </article>
+          <article class="feature">
+            <div class="feature__icon" aria-hidden="true">🧩</div>
+            <h3>Easy customization</h3>
+            <p>Replace placeholder text and links with your bot’s real info.</p>
+          </article>
+          <article class="feature">
+            <div class="feature__icon" aria-hidden="true">⚡</div>
+            <h3>Fast + free</h3>
+            <p>Static site hosted on GitHub Pages (no backend required).</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="commands" class="section section--alt">
+      <div class="container">
+        <div class="section__head">
+          <h2 class="section__title">Commands</h2>
+          <p class="section__subtitle">Add your bot commands here.</p>
+        </div>
+
+        <div class="commands">
+          <div class="command">
+            <div class="command__name">/help</div>
+            <div class="command__desc">Show help and list of commands.</div>
+            <div class="command__tag">core</div>
+          </div>
+          <div class="command">
+            <div class="command__name">/moderation</div>
+            <div class="command__desc">Moderation tools (mute, kick, ban…)</div>
+            <div class="command__tag">mod</div>
+          </div>
+          <div class="command">
+            <div class="command__name">/tickets</div>
+            <div class="command__desc">Create support tickets in your Discord server.</div>
+            <div class="command__tag">support</div>
+          </div>
+          <div class="command">
+            <div class="command__name">/config</div>
+            <div class="command__desc">Server configuration for La Piraterie.</div>
+            <div class="command__tag">admin</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="status" class="section">
+      <div class="container">
+        <h2 class="section__title">Status</h2>
+        <p class="section__subtitle">Placeholder status. Connect to your bot or keep it static.</p>
+
+        <div class="status-wrap">
+          <div class="status-card">
+            <div class="status-card__top">
+              <div class="status-dot" data-status-dot aria-hidden="true"></div>
+              <div>
+                <div class="status-card__title">Bot is operational</div>
+                <div class="status-card__meta">Last updated: <span id="lastUpdated">just now</span></div>
+              </div>
+            </div>
+            <div class="status-card__body">
+              <p class="muted">
+                Replace this with real status from your bot API if you want.
+              </p>
+              <div class="progress">
+                <div class="progress__label">Health</div>
+                <div class="progress__bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="98">
+                  <div class="progress__fill" style="width: 98%"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="status-card status-card--mini">
+            <div class="status-card__title">Webhooks</div>
+            <div class="status-mini-row">
+              <span class="muted">Tickets</span>
+              <span class="badge badge--ok">OK</span>
+            </div>
+            <div class="status-mini-row">
+              <span class="muted">Moderation logs</span>
+              <span class="badge badge--ok">OK</span>
+            </div>
+            <div class="status-mini-row">
+              <span class="muted">Stats</span>
+              <span class="badge">Placeholder</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section--alt" id="invite">
+      <div class="container">
+        <div class="cta">
+          <div>
+            <h2 class="section__title" style="margin-bottom:8px;">Ready to deploy?</h2>
+            <p class="section__subtitle">
+              This template is already built for GitHub Pages. Next step: create a GitHub repo and push these files.
+            </p>
+          </div>
+          <div class="cta__actions">
+            <a class="btn btn--primary" href="#" onclick="toast('GitHub Pages setup instructions are in README.md')">How to publish</a>
+            <a class="btn btn--ghost" href="README.md" target="_blank" rel="noreferrer">Open README</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer__inner">
+      <div class="muted">© <span id="year"></span> La Piraterie</div>
+      <div class="footer__links">
+        <a href="#features">Features</a>
+        <a href="#commands">Commands</a>
+        <a href="#status">Status</a>
+      </div>
+    </div>
+  </footer>
+
+  <div class="toast" role="status" aria-live="polite" aria-atomic="true" id="toast" hidden>
+    <div class="toast__icon" aria-hidden="true">✅</div>
+    <div class="toast__msg" id="toastMsg">Saved.</div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
+
