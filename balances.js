@@ -63,7 +63,7 @@ const escapeHtml = (s) => String(s)
 
 // Change BALANCES_API_URL to your API endpoint.
 // IMPORTANT: the endpoint must allow browser requests (CORS).
-const BALANCES_API_URL = 'http://127.0.0.1:20313/health';
+const BALANCES_API_URL = 'http://127.0.0.1:20313/balance/1';
 
 // IMPORTANT: this is a public frontend. If this key grants access, it will be exposed to anyone.
 // Prefer a server-side proxy in production.
