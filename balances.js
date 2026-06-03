@@ -63,7 +63,7 @@ const escapeHtml = (s) => String(s)
 
 // Change BALANCES_API_URL to your API endpoint.
 // IMPORTANT: the endpoint must allow browser requests (CORS).
-const BALANCES_API_URL = 'jdbc:mysql://u302354_5O3hPguwPM:pI%3D!NbvRTfl%5E!Q3yJXe%2BGjv8@bhs04-db04.katabump.eu:3306/s302354_API';
+const BALANCES_API_URL = 'bhs04-db04.katabump.eu:3306';
 
 // IMPORTANT: this is a public frontend. If this key grants access, it will be exposed to anyone.
 // Prefer a server-side proxy in production.
