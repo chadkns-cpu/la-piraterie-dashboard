@@ -67,7 +67,7 @@ const BALANCES_API_URL = 'bhs04-db04.katabump.eu:3306';
 
 // IMPORTANT: this is a public frontend. If this key grants access, it will be exposed to anyone.
 // Prefer a server-side proxy in production.
-const BALANCES_API_KEY = 'ptlc_x4oA2og180dO5sPwDrRnsARbekqOYGfED6FXjxIGT2u';
+const BALANCES_API_KEY = 'ptlc_ZMxKJnw6mGW';
 
 // Some APIs return a different shape (or require a proxy). We keep the UI resilient.
 // If your endpoint doesn’t return { players: [...] }, adjust the parsing below in `load()`.
