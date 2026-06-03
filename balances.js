@@ -64,13 +64,23 @@ const escapeHtml = (s) => String(s)
 // Change BALANCES_API_URL to your API endpoint.
 // IMPORTANT: the endpoint must allow browser requests (CORS).
 const BALANCES_API_URL = 'http://51.75.118.75:20313/api/stats';
+
+// IMPORTANT: this is a public frontend. If this key grants access, it will be exposed to anyone.
+// Prefer a server-side proxy in production.
+const BALANCES_API_KEY = 'ptlc_ZMxKJnw6mGW';
+
 // Some APIs return a different shape (or require a proxy). We keep the UI resilient.
 // If your endpoint doesn’t return { players: [...] }, adjust the parsing below in `load()`.
 
 
 const load = async () => {
   try {
-    const res = await fetch(BALANCES_API_URL, { cache: 'no-store' });
+    const res = await fetch(BALANCES_API_URL, {
+      cache: 'no-store',
+      headers: {
+        'x-api-key': BALANCES_API_KEY,
+      },
+    });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
 
