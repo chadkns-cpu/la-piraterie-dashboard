@@ -3,6 +3,8 @@ const fmt = (n) => {
   return n.toLocaleString('en-US');
 };
 
+console.log('[balances.js] version 3 loaded');
+
 const normalizeBalance = (value) => {
   if (typeof value === 'number' && Number.isFinite(value)) return value;
   if (typeof value === 'string' && value.trim().length) {
@@ -23,8 +25,9 @@ const getPlayerName = (p) => {
   return '';
 };
 
-const getCurrentBalance = (p) => normalizeBalance(p?.currentBalance ?? p?.current ?? p?.balance ?? p?.balanceCurrent ?? p?.current_balance ?? p?.current ?? p?.amount);
-const getLifetimeBalance = (p) => normalizeBalance(p?.lifetimeBalance ?? p?.lifetime ?? p?.totalBalance ?? p?.total ?? p?.allTimeBalance ?? p?.all_time_balance ?? p?.lifetime_balance ?? p?.total_balance ?? p?.all_time ?? p?.lifetime);
+// Prefer the exact API fields: username / current / lifetime
+const getCurrentBalance = (p) => normalizeBalance(p?.current ?? p?.currentBalance ?? p?.balance ?? p?.amount);
+const getLifetimeBalance = (p) => normalizeBalance(p?.lifetime ?? p?.lifetimeBalance ?? p?.total ?? p?.totalBalance);
 
 const byName = (a, b) => (a.name || '').localeCompare(b.name || '', undefined, { sensitivity: 'base' });
 const byBalanceDesc = (a, b) => (Number.isFinite(b.currentBalance) ? b.currentBalance : 0) - (Number.isFinite(a.currentBalance) ? a.currentBalance : 0);
@@ -69,7 +72,7 @@ const render = () => {
     .map((p) => {
       const name = String(p.name ?? '');
       const current = Number.isFinite(p.currentBalance) ? p.currentBalance : NaN;
-      const lifetime = Number.isFinite(p.lifetimeBalance) ? p.lifetimeBalance : NaN;
+      const lifetime = Number.isFinite(p.lifetimeBalance) ? p.lifetimeBalance : current;
       return `
         <tr>
           <td style="font-weight:900;">${escapeHtml(name)}</td>
