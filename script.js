@@ -59,3 +59,18 @@ if (lastUpdated) {
   lastUpdated.textContent = d.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
 }
 
+// API button: try local `balances.json` then report status (French messages)
+const apiBtn = $('#apiBtn');
+if (apiBtn) {
+  apiBtn.addEventListener('click', async () => {
+    try {
+      const res = await fetch('balances.json', { cache: 'no-store' });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      await res.json();
+      toast("Connecté à l'API (données locales).");
+    } catch (err) {
+      toast("Pas connecté à l'API. Vérifiez votre endpoint.");
+    }
+  });
+}
+
