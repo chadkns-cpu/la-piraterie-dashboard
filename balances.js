@@ -63,11 +63,11 @@ const escapeHtml = (s) => String(s)
 
 // Change BALANCES_API_URL to your API endpoint.
 // IMPORTANT: the endpoint must allow browser requests (CORS).
-const BALANCES_API_URL = 'http://193.70.34.101:20036/balances?api_key=368feea3692ff6070581646deaf1440211f6d2955167ecb45efe985ca06dc3a1';
+const BALANCES_API_URL = 'http://193.70.34.101:20036/balances';
 
 // IMPORTANT: this is a public frontend. If this key grants access, it will be exposed to anyone.
 // Prefer a server-side proxy in production.
-const BALANCES_API_KEY = ;
+const BALANCES_API_KEY = '368feea3692ff6070581646deaf1440211f6d2955167ecb45efe985ca06dc3a1' ;
 
 // Some APIs return a different shape (or require a proxy). We keep the UI resilient.
 // If your endpoint doesn’t return { players: [...] }, adjust the parsing below in `load()`.
