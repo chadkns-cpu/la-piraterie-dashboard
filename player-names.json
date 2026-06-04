@@ -1,15 +1,67 @@
 {
-  "1509570916592521398": "Username1",
-  "1509681448246841465": "Username2",
-  "159227103294914560": "Username3",
-  "177753261456097280": "Username4",
-  "205300112803495936": "Username5",
-  "219863869236051969": "Username6",
-  "220475495454736384": "Username7",
-  "301403757688913932": "Username8",
-  "375917078831693824": "Username9",
-  "403875742976442378": "Username10",
-  "518454120374468618": "Username11",
-  "594270064392536090": "Username12",
-  "634783480076697600": "Username13"
+  "375917078831693824": {
+    "username": "chadkns",
+    "current": 1,
+    "lifetime": 1014001
+  },
+  "1509570916592521398": {
+    "username": "Pirate Bot#2363",
+    "current": 0,
+    "lifetime": 0
+  },
+  "219863869236051969": {
+    "username": ".witwiki",
+    "current": 1,
+    "lifetime": 1
+  },
+  "1509681448246841465": {
+    "username": "deleted_user_000e198ec899",
+    "current": 123466789,
+    "lifetime": 123466789
+  },
+  "159227103294914560": {
+    "username": "meksil",
+    "current": 1700000,
+    "lifetime": 1700000
+  },
+  "205300112803495936": {
+    "username": "annah",
+    "current": 2313957,
+    "lifetime": 2313957
+  },
+  "594270064392536090": {
+    "username": "wyshirong",
+    "current": 4848757,
+    "lifetime": 4848757
+  },
+  "518454120374468618": {
+    "username": "tokenpoker",
+    "current": 2313957,
+    "lifetime": 2313957
+  },
+  "634783480076697600": {
+    "username": "lgakumi",
+    "current": 5396757,
+    "lifetime": 5396757
+  },
+  "301403757688913932": {
+    "username": "chamoni",
+    "current": 0,
+    "lifetime": 0
+  },
+  "177753261456097280": {
+    "username": "jorjadark",
+    "current": 3630800,
+    "lifetime": 3630800
+  },
+  "403875742976442378": {
+    "username": "vieillemouche",
+    "current": 3630800,
+    "lifetime": 3630800
+  },
+  "220475495454736384": {
+    "username": "picolinii",
+    "current": 2296800,
+    "lifetime": 2296800
+  }
 }

@@ -19,6 +19,9 @@ const REFRESH_INTERVAL_MS = 30000;
 let nameMap = {};
 
 const isDiscordId = (value) => typeof value === 'string' && /^[0-9]{17,20}$/.test(value);
+const isObject = (value) => value && typeof value === 'object' && !Array.isArray(value);
+const looksLikePlayerEntry = (value) => isObject(value) && ('username' in value || 'current' in value || 'currentBalance' in value || 'balance' in value || 'lifetime' in value || 'lifetimeBalance' in value || 'name' in value || 'id' in value);
+const isPlayerMap = (value) => isObject(value) && Object.values(value).length > 0 && Object.values(value).every(looksLikePlayerEntry);
 
 const loadNameMap = async () => {
   try {
@@ -31,6 +34,28 @@ const loadNameMap = async () => {
   }
 };
 
+const normalizePlayerMap = (value) => {
+  if (!isPlayerMap(value)) return [];
+  return Object.entries(value).map(([id, entry]) => ({ id, ...entry }));
+};
+
+const getNameMapEntry = (key) => {
+  if (!key || typeof key !== 'string') return null;
+  const value = nameMap[key.trim()];
+  if (!value) return null;
+  if (typeof value === 'string') {
+    return { username: value.trim(), current: NaN, lifetime: NaN };
+  }
+  if (value && typeof value === 'object') {
+    return {
+      username: typeof value.username === 'string' && value.username.trim() ? value.username.trim() : undefined,
+      current: normalizeBalance(value.current ?? value.currentBalance ?? value.balance ?? value.amount),
+      lifetime: normalizeBalance(value.lifetime ?? value.lifetimeBalance ?? value.total ?? value.totalBalance),
+    };
+  }
+  return null;
+};
+
 const getPlayerName = (p) => {
   if (!p) return '';
   if (typeof p.username === 'string' && p.username.trim()) return p.username.trim();
@@ -41,7 +66,8 @@ const getPlayerName = (p) => {
   const rawId = typeof p.id === 'string' ? p.id.trim() : (typeof p.id === 'number' ? String(p.id) : '');
   const candidate = rawName || rawId;
   if (!candidate) return '';
-  if (nameMap[candidate]) return String(nameMap[candidate]);
+  const mapEntry = getNameMapEntry(candidate);
+  if (mapEntry?.username) return mapEntry.username;
   return candidate;
 };
 
@@ -154,18 +180,24 @@ const load = async () => {
         ? data.players
         : Array.isArray(data?.data)
           ? data.data
-          : Array.isArray(data)
-            ? data
-            : [];
+          : isPlayerMap(data?.players)
+            ? normalizePlayerMap(data.players)
+            : isPlayerMap(data)
+              ? normalizePlayerMap(data)
+              : [];
 
     state.balances = rawBalances
       .map((p) => {
+        const rawName = typeof p.name === 'string' ? p.name.trim() : '';
+        const rawId = typeof p.id === 'string' ? p.id.trim() : (typeof p.id === 'number' ? String(p.id) : '');
+        const candidate = rawName || rawId;
+        const mapEntry = getNameMapEntry(candidate);
         const cur = getCurrentBalance(p);
         const life = getLifetimeBalance(p);
         return {
           name: getPlayerName(p),
-          currentBalance: Number.isFinite(cur) ? cur : NaN,
-          lifetimeBalance: Number.isFinite(life) ? life : NaN,
+          currentBalance: Number.isFinite(cur) ? cur : (mapEntry?.current ?? NaN),
+          lifetimeBalance: Number.isFinite(life) ? life : (mapEntry?.lifetime ?? NaN),
         };
       })
       .filter((p) => p.name.length);
