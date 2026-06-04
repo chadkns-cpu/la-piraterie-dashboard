@@ -12,9 +12,19 @@ const normalizeBalance = (value) => {
   return NaN;
 };
 
-const getPlayerName = (p) => String(p?.username ?? p?.user ?? p?.name ?? p?.id ?? '').trim();
-const getCurrentBalance = (p) => normalizeBalance(p?.currentBalance ?? p?.current ?? p?.balance ?? p?.balanceCurrent ?? p?.current_balance ?? p?.current);
-const getLifetimeBalance = (p) => normalizeBalance(p?.lifetimeBalance ?? p?.lifetime ?? p?.totalBalance ?? p?.total ?? p?.allTimeBalance ?? p?.all_time_balance ?? p?.lifetime_balance ?? p?.total_balance ?? p?.all_time);
+const getPlayerName = (p) => {
+  if (!p) return '';
+  if (typeof p.username === 'string' && p.username.trim()) return p.username.trim();
+  if (p.user && typeof p.user.username === 'string' && p.user.username.trim()) return p.user.username.trim();
+  if (p.user && typeof p.user.name === 'string' && p.user.name.trim()) return p.user.name.trim();
+  if (typeof p.name === 'string' && p.name.trim()) return p.name.trim();
+  if (typeof p.id === 'string' && p.id.trim()) return p.id.trim();
+  if (typeof p.id === 'number') return String(p.id);
+  return '';
+};
+
+const getCurrentBalance = (p) => normalizeBalance(p?.currentBalance ?? p?.current ?? p?.balance ?? p?.balanceCurrent ?? p?.current_balance ?? p?.current ?? p?.amount);
+const getLifetimeBalance = (p) => normalizeBalance(p?.lifetimeBalance ?? p?.lifetime ?? p?.totalBalance ?? p?.total ?? p?.allTimeBalance ?? p?.all_time_balance ?? p?.lifetime_balance ?? p?.total_balance ?? p?.all_time ?? p?.lifetime);
 
 const byName = (a, b) => (a.name || '').localeCompare(b.name || '', undefined, { sensitivity: 'base' });
 const byBalanceDesc = (a, b) => (b.currentBalance ?? 0) - (a.currentBalance ?? 0);
@@ -58,8 +68,8 @@ const render = () => {
   tableRowsEl.innerHTML = list
     .map((p) => {
       const name = String(p.name ?? '');
-      const current = typeof p.currentBalance === 'number' ? p.currentBalance : Number(p.currentBalance);
-      const lifetime = typeof p.lifetimeBalance === 'number' ? p.lifetimeBalance : Number(p.lifetimeBalance);
+      const current = Number.isFinite(p.currentBalance) ? p.currentBalance : 0;
+      const lifetime = Number.isFinite(p.lifetimeBalance) ? p.lifetimeBalance : 0;
       return `
         <tr>
           <td style="font-weight:900;">${escapeHtml(name)}</td>
@@ -125,11 +135,15 @@ const load = async () => {
             : [];
 
     state.balances = rawBalances
-      .map((p) => ({
-        name: getPlayerName(p),
-        currentBalance: getCurrentBalance(p),
-        lifetimeBalance: getLifetimeBalance(p),
-      }))
+      .map((p) => {
+        const cur = getCurrentBalance(p);
+        const life = getLifetimeBalance(p);
+        return {
+          name: getPlayerName(p),
+          currentBalance: Number.isFinite(cur) ? cur : 0,
+          lifetimeBalance: Number.isFinite(life) ? life : 0,
+        };
+      })
       .filter((p) => p.name.length);
 
     if (generatedAtTextEl) {
@@ -217,11 +231,15 @@ const load = async () => {
                 : [];
 
         state.balances = rawBalances
-          .map((p) => ({
-            name: getPlayerName(p),
-            currentBalance: getCurrentBalance(p),
-            lifetimeBalance: getLifetimeBalance(p),
-          }))
+          .map((p) => {
+            const cur = getCurrentBalance(p);
+            const life = getLifetimeBalance(p);
+            return {
+              name: getPlayerName(p),
+              currentBalance: Number.isFinite(cur) ? cur : 0,
+              lifetimeBalance: Number.isFinite(life) ? life : 0,
+            };
+          })
           .filter((p) => p.name.length);
 
         if (generatedAtTextEl) generatedAtTextEl.textContent = 'Loaded local balances.json';
