@@ -177,7 +177,7 @@ const load = async () => {
     const errMsg = e?.message || String(e);
     if (generatedAtTextEl) generatedAtTextEl.textContent = `Could not load balances: ${errMsg}`;
     if (tableRowsEl) {
-      tableRowsEl.innerHTML = `<tr><td colspan="2" class="muted">Failed to load balances from ${escapeHtml(BALANCES_API_URL)} — ${escapeHtml(errMsg)}</td></tr>`;
+      tableRowsEl.innerHTML = `<tr><td colspan="3" class="muted">Failed to load balances from ${escapeHtml(BALANCES_API_URL)} — ${escapeHtml(errMsg)}</td></tr>`;
     }
 
     try {
