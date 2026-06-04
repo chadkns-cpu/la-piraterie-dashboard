@@ -43,20 +43,24 @@
       </div>
 
       <div class="card" style="padding:16px; overflow:auto;">
-        <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:space-between; margin-bottom:12px;">
-          <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
-            <input id="search" type="text" placeholder="Search player…" class="input" style="min-width:260px" />
-            <select id="sort" class="input" style="min-width:210px">
-              <option value="name">Sort: A → Z</option>
-              <option value="balance_desc">Balance: high → low</option>
-              <option value="balance_asc">Balance: low → high</option>
-            </select>
+        <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:12px;">
+          <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+            <input id="balancesUrlInput" type="text" placeholder="Balances URL (ex: https://api.example.com/balances)" class="input" style="min-width:320px" />
+            <input id="healthUrlInput" type="text" placeholder="Health URL (ex: https://api.example.com/health)" class="input" style="min-width:320px" />
           </div>
 
-          <div class="muted" style="font-weight:800;">Rows: <span id="rowCount">0</span></div>
-        </div>
+          <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:space-between;">
+            <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+              <input id="search" type="text" placeholder="Search player…" class="input" style="min-width:260px" />
+              <select id="sort" class="input" style="min-width:210px">
+                <option value="name">Sort: A → Z</option>
+                <option value="balance_desc">Balance: high → low</option>
+                <option value="balance_asc">Balance: low → high</option>
+              </select>
+            </div>
 
-          <div class="muted" style="font-weight:800;">Rows: <span id="rowCount">0</span></div>
+            <div class="muted" style="font-weight:800;">Rows: <span id="rowCount">0</span></div>
+          </div>
         </div>
 
         <table class="table" role="table" aria-label="Player balances">

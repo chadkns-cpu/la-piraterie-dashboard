@@ -77,7 +77,10 @@ const BALANCES_API_KEY = '368feea3692ff6070581646deaf1440211f6d2955167ecb45efe98
 
 const load = async () => {
   try {
-    const fetchUrl = BALANCES_API_URL;
+    const balancesUrlVal = (qs('#balancesUrlInput')?.value?.trim()) || localStorage.getItem('lp_balances_url') || BALANCES_API_URL;
+    const healthUrlVal = (qs('#healthUrlInput')?.value?.trim()) || localStorage.getItem('lp_health_url') || (balancesUrlVal ? (balancesUrlVal.includes('balances') ? balancesUrlVal.replace(/balances/g, 'health') : (balancesUrlVal.endsWith('/') ? balancesUrlVal + 'health' : balancesUrlVal + '/health')) : '');
+
+    const fetchUrl = balancesUrlVal || BALANCES_API_URL;
     const headers = {};
     if (typeof BALANCES_API_KEY === 'string' && BALANCES_API_KEY.length) headers['x-api-key'] = BALANCES_API_KEY;
 
@@ -91,8 +94,26 @@ const load = async () => {
     // Save raw response
     state.raw = data;
 
-    // Extract health/status if present
+    // Extract health/status from balances response (may be overridden by separate health URL below)
     state.health = data?.health ?? data?.status ?? data?.ok ?? null;
+
+    // If a separate health URL is configured, fetch it and override state.health
+    if (healthUrlVal) {
+      try {
+        const hres = await fetch(healthUrlVal, { cache: 'no-store' });
+        if (hres.ok) {
+          try {
+            state.health = await hres.json();
+          } catch (e) {
+            state.health = await hres.text();
+          }
+        } else {
+          state.health = `HTTP ${hres.status}`;
+        }
+      } catch (he) {
+        state.health = he?.message || String(he);
+      }
+    }
 
     // Accept multiple shapes for balances:
     // - { balances: [...] }
@@ -239,6 +260,38 @@ const load = async () => {
 if (searchEl) searchEl.addEventListener('input', render);
 if (sortEl) sortEl.addEventListener('change', render);
 
-// Inputs removed — use configured `BALANCES_API_URL` and `BALANCES_API_KEY`.
+// Initialize URL inputs (save in localStorage) and wire change handlers if inputs exist
+try {
+  const balancesUrlInput = qs('#balancesUrlInput');
+  const healthUrlInput = qs('#healthUrlInput');
+  const storedBalances = localStorage.getItem('lp_balances_url');
+  const storedHealth = localStorage.getItem('lp_health_url');
 
+  const deriveHealthDefault = (url) => {
+    if (!url) return '';
+    try {
+      if (url.includes('balances')) return url.replace(/balances/g, 'health');
+      return url.endsWith('/') ? url + 'health' : url + '/health';
+    } catch (e) { return '' }
+  };
+
+  if (balancesUrlInput) {
+    balancesUrlInput.value = storedBalances || BALANCES_API_URL || '';
+    balancesUrlInput.addEventListener('change', () => {
+      localStorage.setItem('lp_balances_url', balancesUrlInput.value.trim());
+      load();
+    });
+  }
+  if (healthUrlInput) {
+    healthUrlInput.value = storedHealth || deriveHealthDefault(balancesUrlInput?.value || BALANCES_API_URL);
+    healthUrlInput.addEventListener('change', () => {
+      localStorage.setItem('lp_health_url', healthUrlInput.value.trim());
+      load();
+    });
+  }
+} catch (e) {
+  // ignore
+}
+
+// Initial load
 load();
