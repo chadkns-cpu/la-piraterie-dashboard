@@ -154,10 +154,18 @@ const escapeHtml = (s) => String(s)
 // Change BALANCES_API_URL to your API endpoint.
 // IMPORTANT: the endpoint must allow browser requests (CORS).
 const BALANCES_API_URL = 'http://193.70.34.101:20036/balances';
+const LOCAL_BALANCES_URL = 'balances.json';
+const USE_LOCAL_FIRST = true;
 
 // IMPORTANT: this is a public frontend. If this key grants access, it will be exposed to anyone.
 // Prefer a server-side proxy in production.
 const BALANCES_API_KEY = '368feea3692ff6070581646deaf1440211f6d2955167ecb45efe985ca06dc3a1' ;
+
+const loadLocalBalances = async () => {
+  const res = await fetch(LOCAL_BALANCES_URL, { cache: 'no-store' });
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return res.json();
+};
 
 // Some APIs return a different shape (or require a proxy). We keep the UI resilient.
 // If your endpoint doesn’t return { players: [...] }, adjust the parsing below in `load()`.
@@ -166,16 +174,35 @@ const BALANCES_API_KEY = '368feea3692ff6070581646deaf1440211f6d2955167ecb45efe98
 const load = async () => {
   try {
     nameMap = await loadNameMap();
-    const fetchUrl = BALANCES_API_URL;
-    const headers = {};
-    if (typeof BALANCES_API_KEY === 'string' && BALANCES_API_KEY.length) headers['x-api-key'] = BALANCES_API_KEY;
+    let data;
 
-    const res = await fetch(fetchUrl, {
-      cache: 'no-store',
-      headers,
-    });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const data = await res.json();
+    if (USE_LOCAL_FIRST) {
+      try {
+        data = await loadLocalBalances();
+        if (generatedAtTextEl) generatedAtTextEl.textContent = 'Loaded local balances.json';
+      } catch (localErr) {
+        data = null;
+      }
+    }
+
+    if (!data) {
+      const fetchUrl = BALANCES_API_URL;
+      const headers = {};
+      if (typeof BALANCES_API_KEY === 'string' && BALANCES_API_KEY.length) headers['x-api-key'] = BALANCES_API_KEY;
+
+      const res = await fetch(fetchUrl, {
+        cache: 'no-store',
+        headers,
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      data = await res.json();
+      if (generatedAtTextEl) {
+        const d = data?.generatedAt ? new Date(data.generatedAt) : null;
+        generatedAtTextEl.textContent = d && !Number.isNaN(d.getTime())
+          ? `Updated: ${d.toLocaleString()}`
+          : 'Updated.';
+      }
+    }
 
     // Save raw response
     state.raw = data;
