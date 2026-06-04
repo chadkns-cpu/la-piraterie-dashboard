@@ -77,11 +77,16 @@ const BALANCES_API_KEY = '368feea3692ff6070581646deaf1440211f6d2955167ecb45efe98
 
 const load = async () => {
   try {
-    const res = await fetch(BALANCES_API_URL, {
+    const urlInputVal = qs('#apiUrlInput')?.value?.trim();
+    const keyInputVal = qs('#apiKeyInput')?.value?.trim();
+    const fetchUrl = urlInputVal || BALANCES_API_URL;
+    const headers = {};
+    if (keyInputVal) headers['x-api-key'] = keyInputVal;
+    else if (typeof BALANCES_API_KEY === 'string' && BALANCES_API_KEY.length) headers['x-api-key'] = BALANCES_API_KEY;
+
+    const res = await fetch(fetchUrl, {
       cache: 'no-store',
-      headers: {
-        'x-api-key': BALANCES_API_KEY,
-      },
+      headers,
     });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
@@ -154,14 +159,105 @@ const load = async () => {
       // ignore UI errors when showing raw JSON
     }
   } catch (e) {
-    if (generatedAtTextEl) generatedAtTextEl.textContent = 'Could not load balances.';
+    const errMsg = e?.message || String(e);
+    if (generatedAtTextEl) generatedAtTextEl.textContent = `Could not load balances: ${errMsg}`;
     if (tableRowsEl) {
-      tableRowsEl.innerHTML = `<tr><td colspan="2" class="muted">Failed to load balances from ${escapeHtml(BALANCES_API_URL)}</td></tr>`;
+      tableRowsEl.innerHTML = `<tr><td colspan="2" class="muted">Failed to load balances from ${escapeHtml(BALANCES_API_URL)} — ${escapeHtml(errMsg)}</td></tr>`;
     }
+
+    try {
+      const rawEl = qs('#rawData') || (() => {
+        const el = document.createElement('pre');
+        el.id = 'rawData';
+        el.style.whiteSpace = 'pre-wrap';
+        el.style.maxHeight = '40vh';
+        el.style.overflow = 'auto';
+        el.style.margin = '1rem';
+        document.body.appendChild(el);
+        return el;
+      })();
+      rawEl.textContent = `Error loading ${BALANCES_API_URL}\n${errMsg}`;
+    } catch (uiErr) {
+      // ignore
+    }
+
+    // Try fallback to local `balances.json`
+    (async () => {
+      try {
+        const fallbackRes = await fetch('balances.json', { cache: 'no-store' });
+        if (!fallbackRes.ok) throw new Error(`HTTP ${fallbackRes.status}`);
+        const data = await fallbackRes.json();
+
+        // Process fallback data (same logic as success case)
+        state.raw = data;
+        state.health = data?.health ?? data?.status ?? data?.ok ?? null;
+        const rawBalances = Array.isArray(data?.balances)
+          ? data.balances
+          : Array.isArray(data?.players)
+            ? data.players
+            : Array.isArray(data?.data)
+              ? data.data
+              : Array.isArray(data)
+                ? data
+                : [];
+
+        state.balances = rawBalances
+          .map((p) => ({
+            name: String(p?.name ?? ''),
+            balance: typeof p?.balance === 'number' ? p.balance : Number(p?.balance),
+          }))
+          .filter((p) => p.name.length);
+
+        if (generatedAtTextEl) generatedAtTextEl.textContent = 'Loaded local balances.json';
+        try {
+          const rawEl2 = qs('#rawData') || (() => { throw 0; })();
+          rawEl2.textContent = JSON.stringify(data, null, 2);
+        } catch (ignore) {}
+        render();
+        if (typeof toast === 'function') toast("Données locales chargées (balances.json).");
+        return;
+      } catch (fe) {
+        const fmsg = fe?.message || String(fe);
+        if (typeof toast === 'function') toast("Impossible de charger l'API et le fallback local a échoué.");
+        try {
+          const rawEl3 = qs('#rawData') || (() => {
+            const el = document.createElement('pre');
+            el.id = 'rawData';
+            el.style.whiteSpace = 'pre-wrap';
+            el.style.maxHeight = '40vh';
+            el.style.overflow = 'auto';
+            el.style.margin = '1rem';
+            document.body.appendChild(el);
+            return el;
+          })();
+          rawEl3.textContent = `Fallback error: ${fmsg}`;
+        } catch (uiErr) {}
+      }
+    })();
   }
 };
 
 if (searchEl) searchEl.addEventListener('input', render);
 if (sortEl) sortEl.addEventListener('change', render);
+
+// Populate API input defaults and wire up test button
+try {
+  const apiUrlInput = qs('#apiUrlInput');
+  const apiKeyInput = qs('#apiKeyInput');
+  if (apiUrlInput) apiUrlInput.value = BALANCES_API_URL || '';
+  if (apiKeyInput) apiKeyInput.value = typeof BALANCES_API_KEY === 'string' ? BALANCES_API_KEY : '';
+  const apiTestBtn = qs('#apiTestBtn');
+  if (apiTestBtn) apiTestBtn.addEventListener('click', async () => {
+    // Re-run load() which will read the inputs
+    try {
+      await load();
+      if (typeof toast === 'function') toast("Test effectué.");
+    } catch (err) {
+      if (typeof toast === 'function') toast("Test échoué.");
+    }
+  });
+} catch (e) {
+  // ignore
+}
 
 load();
