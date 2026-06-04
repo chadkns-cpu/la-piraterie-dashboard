@@ -8,7 +8,9 @@ const byBalanceDesc = (a, b) => (b.balance ?? 0) - (a.balance ?? 0);
 const byBalanceAsc = (a, b) => (a.balance ?? 0) - (b.balance ?? 0);
 
 const state = {
-  players: [],
+  raw: null,
+  health: null,
+  balances: [],
 };
 
 const qs = (sel) => document.querySelector(sel);
@@ -22,7 +24,7 @@ const sortEl = qs('#sort');
 
 const render = () => {
   const query = (searchEl?.value || '').trim().toLowerCase();
-  let list = state.players.slice();
+  let list = (state.balances || []).slice();
 
   if (query) {
     list = list.filter((p) => (p.name || '').toLowerCase().includes(query));
@@ -63,7 +65,7 @@ const escapeHtml = (s) => String(s)
 
 // Change BALANCES_API_URL to your API endpoint.
 // IMPORTANT: the endpoint must allow browser requests (CORS).
-const BALANCES_API_URL = 'http://193.70.34.101:20036/balances';
+const BALANCES_API_URL = 'http://193.70.34.101:20036';
 
 // IMPORTANT: this is a public frontend. If this key grants access, it will be exposed to anyone.
 // Prefer a server-side proxy in production.
@@ -84,22 +86,28 @@ const load = async () => {
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
 
-    // Expected JSON format:
-    // { "players": [ {"name":"Alice","balance":1500}, ... ], "generatedAt":"..." }
-// Accept multiple shapes:
+    // Save raw response
+    state.raw = data;
+
+    // Extract health/status if present
+    state.health = data?.health ?? data?.status ?? data?.ok ?? null;
+
+    // Accept multiple shapes for balances:
+    // - { balances: [...] }
     // - { players: [...] }
     // - { data: [...] }
     // - [...] (array directly)
-    const rawPlayers = Array.isArray(data?.players)
-      ? data.players
-      : Array.isArray(data?.data)
-        ? data.data
-        : Array.isArray(data)
-          ? data
-          : [];
+    const rawBalances = Array.isArray(data?.balances)
+      ? data.balances
+      : Array.isArray(data?.players)
+        ? data.players
+        : Array.isArray(data?.data)
+          ? data.data
+          : Array.isArray(data)
+            ? data
+            : [];
 
-    const players = rawPlayers;
-    state.players = players
+    state.balances = rawBalances
       .map((p) => ({
         name: String(p?.name ?? ''),
         balance: typeof p?.balance === 'number' ? p.balance : Number(p?.balance),
@@ -113,7 +121,38 @@ const load = async () => {
         : 'Updated.';
     }
 
+    // Show health status if available
+    try {
+      const healthEl = qs('#healthStatus') || (() => {
+        const el = document.createElement('div');
+        el.id = 'healthStatus';
+        el.style.margin = '0.5rem 1rem';
+        el.style.fontWeight = '700';
+        document.body.insertBefore(el, document.body.firstChild);
+        return el;
+      })();
+      healthEl.textContent = state.health === null ? 'Health: —' : `Health: ${typeof state.health === 'object' ? JSON.stringify(state.health) : String(state.health)}`;
+    } catch (err) {
+      // ignore UI errors
+    }
+
     render();
+    // Also show the full API response (raw JSON) so the UI can "lire tout".
+    try {
+      const rawEl = qs('#rawData') || (() => {
+        const el = document.createElement('pre');
+        el.id = 'rawData';
+        el.style.whiteSpace = 'pre-wrap';
+        el.style.maxHeight = '40vh';
+        el.style.overflow = 'auto';
+        el.style.margin = '1rem';
+        document.body.appendChild(el);
+        return el;
+      })();
+      rawEl.textContent = JSON.stringify(data, null, 2);
+    } catch (err) {
+      // ignore UI errors when showing raw JSON
+    }
   } catch (e) {
     if (generatedAtTextEl) generatedAtTextEl.textContent = 'Could not load balances.';
     if (tableRowsEl) {
@@ -126,4 +165,3 @@ if (searchEl) searchEl.addEventListener('input', render);
 if (sortEl) sortEl.addEventListener('change', render);
 
 load();
-
