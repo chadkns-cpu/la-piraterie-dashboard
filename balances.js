@@ -39,6 +39,20 @@ const normalizePlayerMap = (value) => {
   return Object.entries(value).map(([id, entry]) => ({ id, ...entry }));
 };
 
+const extractRawBalances = (data) => {
+  return Array.isArray(data?.balances)
+    ? data.balances
+    : Array.isArray(data?.players)
+      ? data.players
+      : Array.isArray(data?.data)
+        ? data.data
+        : isPlayerMap(data?.players)
+          ? normalizePlayerMap(data.players)
+          : isPlayerMap(data)
+            ? normalizePlayerMap(data)
+            : [];
+};
+
 const getNameMapEntry = (key) => {
   if (!key || typeof key !== 'string') return null;
   const value = nameMap[key.trim()];
@@ -174,17 +188,7 @@ const load = async () => {
     // - { players: [...] }
     // - { data: [...] }
     // - [...] (array directly)
-    const rawBalances = Array.isArray(data?.balances)
-      ? data.balances
-      : Array.isArray(data?.players)
-        ? data.players
-        : Array.isArray(data?.data)
-          ? data.data
-          : isPlayerMap(data?.players)
-            ? normalizePlayerMap(data.players)
-            : isPlayerMap(data)
-              ? normalizePlayerMap(data)
-              : [];
+    const rawBalances = extractRawBalances(data);
 
     state.balances = rawBalances
       .map((p) => {
@@ -276,15 +280,7 @@ const load = async () => {
         // Process fallback data (same logic as success case)
         state.raw = data;
         state.health = data?.health ?? data?.status ?? data?.ok ?? null;
-        const rawBalances = Array.isArray(data?.balances)
-          ? data.balances
-          : Array.isArray(data?.players)
-            ? data.players
-            : Array.isArray(data?.data)
-              ? data.data
-              : Array.isArray(data)
-                ? data
-                : [];
+        const rawBalances = extractRawBalances(data);
 
         state.balances = rawBalances
           .map((p) => {
