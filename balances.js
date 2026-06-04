@@ -14,15 +14,35 @@ const normalizeBalance = (value) => {
   return NaN;
 };
 
+const NAME_MAP_URL = 'player-names.json';
+const REFRESH_INTERVAL_MS = 30000;
+let nameMap = {};
+
+const isDiscordId = (value) => typeof value === 'string' && /^[0-9]{17,20}$/.test(value);
+
+const loadNameMap = async () => {
+  try {
+    const res = await fetch(NAME_MAP_URL, { cache: 'no-store' });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    return data && typeof data === 'object' && !Array.isArray(data) ? data : {};
+  } catch (err) {
+    return {};
+  }
+};
+
 const getPlayerName = (p) => {
   if (!p) return '';
   if (typeof p.username === 'string' && p.username.trim()) return p.username.trim();
   if (p.user && typeof p.user.username === 'string' && p.user.username.trim()) return p.user.username.trim();
   if (p.user && typeof p.user.name === 'string' && p.user.name.trim()) return p.user.name.trim();
-  if (typeof p.name === 'string' && p.name.trim()) return p.name.trim();
-  if (typeof p.id === 'string' && p.id.trim()) return p.id.trim();
-  if (typeof p.id === 'number') return String(p.id);
-  return '';
+
+  const rawName = typeof p.name === 'string' ? p.name.trim() : '';
+  const rawId = typeof p.id === 'string' ? p.id.trim() : (typeof p.id === 'number' ? String(p.id) : '');
+  const candidate = rawName || rawId;
+  if (!candidate) return '';
+  if (nameMap[candidate]) return String(nameMap[candidate]);
+  return candidate;
 };
 
 // Prefer the exact API fields: username / current / lifetime
@@ -105,6 +125,7 @@ const BALANCES_API_KEY = '368feea3692ff6070581646deaf1440211f6d2955167ecb45efe98
 
 const load = async () => {
   try {
+    nameMap = await loadNameMap();
     const fetchUrl = BALANCES_API_URL;
     const headers = {};
     if (typeof BALANCES_API_KEY === 'string' && BALANCES_API_KEY.length) headers['x-api-key'] = BALANCES_API_KEY;
@@ -274,7 +295,33 @@ const load = async () => {
   }
 };
 
+const refreshBtnEl = qs('#refreshBtn');
+let refreshTimer = null;
+
+const setupRefresh = () => {
+  if (refreshBtnEl) {
+    refreshBtnEl.addEventListener('click', async () => {
+      refreshBtnEl.disabled = true;
+      const originalText = refreshBtnEl.textContent;
+      refreshBtnEl.textContent = 'Refreshing…';
+      try {
+        await load();
+      } finally {
+        refreshBtnEl.disabled = false;
+        refreshBtnEl.textContent = originalText;
+      }
+    });
+  }
+
+  if (typeof window !== 'undefined' && typeof window.setInterval === 'function') {
+    refreshTimer = window.setInterval(() => {
+      load();
+    }, REFRESH_INTERVAL_MS);
+  }
+};
+
 if (searchEl) searchEl.addEventListener('input', render);
 if (sortEl) sortEl.addEventListener('change', render);
 
+setupRefresh();
 load();

@@ -1,57 +1,83 @@
 ﻿{
-    "generatedAt":  "2026-06-04T07:06:27.824Z",
-    "players":  [
-                    {
-                        "name":  "1509570916592521398",
-                        "balance":  0
-                    },
-                    {
-                        "name":  "1509681448246841465",
-                        "balance":  123466789
-                    },
-                    {
-                        "name":  "159227103294914560",
-                        "balance":  1700000
-                    },
-                    {
-                        "name":  "177753261456097280",
-                        "balance":  3630800
-                    },
-                    {
-                        "name":  "205300112803495936",
-                        "balance":  2313957
-                    },
-                    {
-                        "name":  "219863869236051969",
-                        "balance":  2
-                    },
-                    {
-                        "name":  "220475495454736384",
-                        "balance":  2296800
-                    },
-                    {
-                        "name":  "301403757688913932",
-                        "balance":  0
-                    },
-                    {
-                        "name":  "375917078831693824",
-                        "balance":  1
-                    },
-                    {
-                        "name":  "403875742976442378",
-                        "balance":  3630800
-                    },
-                    {
-                        "name":  "518454120374468618",
-                        "balance":  2313957
-                    },
-                    {
-                        "name":  "594270064392536090",
-                        "balance":  4848757
-                    },
-                    {
-                        "name":  "634783480076697600",
-                        "balance":  5396757
-                    }
-                ]
+  "generatedAt": "2026-06-04T07:06:27.824Z",
+  "players": [
+    {
+      "id": "1509570916592521398",
+      "username": "Username1",
+      "current": 0,
+      "lifetime": 0
+    },
+    {
+      "id": "1509681448246841465",
+      "username": "Username2",
+      "current": 123466789,
+      "lifetime": 123466789
+    },
+    {
+      "id": "159227103294914560",
+      "username": "Username3",
+      "current": 1700000,
+      "lifetime": 1700000
+    },
+    {
+      "id": "177753261456097280",
+      "username": "Username4",
+      "current": 3630800,
+      "lifetime": 3630800
+    },
+    {
+      "id": "205300112803495936",
+      "username": "Username5",
+      "current": 2313957,
+      "lifetime": 2313957
+    },
+    {
+      "id": "219863869236051969",
+      "username": "Username6",
+      "current": 2,
+      "lifetime": 2
+    },
+    {
+      "id": "220475495454736384",
+      "username": "Username7",
+      "current": 2296800,
+      "lifetime": 2296800
+    },
+    {
+      "id": "301403757688913932",
+      "username": "Username8",
+      "current": 0,
+      "lifetime": 0
+    },
+    {
+      "id": "375917078831693824",
+      "username": "Username9",
+      "current": 1,
+      "lifetime": 1
+    },
+    {
+      "id": "403875742976442378",
+      "username": "Username10",
+      "current": 3630800,
+      "lifetime": 3630800
+    },
+    {
+      "id": "518454120374468618",
+      "username": "Username11",
+      "current": 2313957,
+      "lifetime": 2313957
+    },
+    {
+      "id": "594270064392536090",
+      "username": "Username12",
+      "current": 4848757,
+      "lifetime": 4848757
+    },
+    {
+      "id": "634783480076697600",
+      "username": "Username13",
+      "current": 5396757,
+      "lifetime": 5396757
+    }
+  ]
 }
