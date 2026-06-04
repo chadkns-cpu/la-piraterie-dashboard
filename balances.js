@@ -3,9 +3,22 @@ const fmt = (n) => {
   return n.toLocaleString('en-US');
 };
 
+const normalizeBalance = (value) => {
+  if (typeof value === 'number' && Number.isFinite(value)) return value;
+  if (typeof value === 'string' && value.trim().length) {
+    const parsed = Number(value);
+    return Number.isFinite(parsed) ? parsed : NaN;
+  }
+  return NaN;
+};
+
+const getPlayerName = (p) => String(p?.username ?? p?.user ?? p?.name ?? p?.id ?? '').trim();
+const getCurrentBalance = (p) => normalizeBalance(p?.currentBalance ?? p?.current ?? p?.balance ?? p?.balanceCurrent ?? p?.current_balance ?? p?.current);
+const getLifetimeBalance = (p) => normalizeBalance(p?.lifetimeBalance ?? p?.lifetime ?? p?.totalBalance ?? p?.total ?? p?.allTimeBalance ?? p?.all_time_balance ?? p?.lifetime_balance ?? p?.total_balance ?? p?.all_time);
+
 const byName = (a, b) => (a.name || '').localeCompare(b.name || '', undefined, { sensitivity: 'base' });
-const byBalanceDesc = (a, b) => (b.balance ?? 0) - (a.balance ?? 0);
-const byBalanceAsc = (a, b) => (a.balance ?? 0) - (b.balance ?? 0);
+const byBalanceDesc = (a, b) => (b.currentBalance ?? 0) - (a.currentBalance ?? 0);
+const byBalanceAsc = (a, b) => (a.currentBalance ?? 0) - (b.currentBalance ?? 0);
 
 const state = {
   raw: null,
@@ -38,18 +51,20 @@ const render = () => {
   rowCountEl.textContent = String(list.length);
 
   if (!list.length) {
-    tableRowsEl.innerHTML = '<tr><td colspan="2" class="muted">No results.</td></tr>';
+    tableRowsEl.innerHTML = '<tr><td colspan="3" class="muted">No results.</td></tr>';
     return;
   }
 
   tableRowsEl.innerHTML = list
     .map((p) => {
       const name = String(p.name ?? '');
-      const balance = typeof p.balance === 'number' ? p.balance : Number(p.balance);
+      const current = typeof p.currentBalance === 'number' ? p.currentBalance : Number(p.currentBalance);
+      const lifetime = typeof p.lifetimeBalance === 'number' ? p.lifetimeBalance : Number(p.lifetimeBalance);
       return `
         <tr>
           <td style="font-weight:900;">${escapeHtml(name)}</td>
-          <td style="text-align:right; font-weight:900;">${fmt(balance)}</td>
+          <td style="text-align:right; font-weight:900;">${fmt(current)}</td>
+          <td style="text-align:right; font-weight:900;">${fmt(lifetime)}</td>
         </tr>
       `;
     })
@@ -58,9 +73,9 @@ const render = () => {
 
 const escapeHtml = (s) => String(s)
   .replaceAll('&', '&amp;')
-  .replaceAll('<', '<')
-  .replaceAll('>', '>')
-  .replaceAll('"', '"')
+  .replaceAll('<', '&lt;')
+  .replaceAll('>', '&gt;')
+  .replaceAll('"', '&quot;')
   .replaceAll("'", '&#039;');
 
 // Change BALANCES_API_URL to your API endpoint.
@@ -111,8 +126,9 @@ const load = async () => {
 
     state.balances = rawBalances
       .map((p) => ({
-        name: String(p?.name ?? ''),
-        balance: typeof p?.balance === 'number' ? p.balance : Number(p?.balance),
+        name: getPlayerName(p),
+        currentBalance: getCurrentBalance(p),
+        lifetimeBalance: getLifetimeBalance(p),
       }))
       .filter((p) => p.name.length);
 
@@ -202,8 +218,9 @@ const load = async () => {
 
         state.balances = rawBalances
           .map((p) => ({
-            name: String(p?.name ?? ''),
-            balance: typeof p?.balance === 'number' ? p.balance : Number(p?.balance),
+            name: getPlayerName(p),
+            currentBalance: getCurrentBalance(p),
+            lifetimeBalance: getLifetimeBalance(p),
           }))
           .filter((p) => p.name.length);
 
