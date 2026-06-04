@@ -77,16 +77,9 @@ const BALANCES_API_KEY = '368feea3692ff6070581646deaf1440211f6d2955167ecb45efe98
 
 const load = async () => {
   try {
-    const balancesUrlVal = qs('#balancesUrlInput')?.value?.trim();
-    const healthUrlVal = qs('#healthUrlInput')?.value?.trim();
-    const keyInputVal = qs('#apiKeyInput')?.value?.trim();
-    const balancesDefault = (typeof BALANCES_API_URL === 'string' && BALANCES_API_URL.length)
-      ? (BALANCES_API_URL.endsWith('/') ? BALANCES_API_URL + 'balances' : BALANCES_API_URL + '/balances')
-      : '';
-    const fetchUrl = balancesUrlVal || balancesDefault || BALANCES_API_URL;
+    const fetchUrl = BALANCES_API_URL;
     const headers = {};
-    if (keyInputVal) headers['x-api-key'] = keyInputVal;
-    else if (typeof BALANCES_API_KEY === 'string' && BALANCES_API_KEY.length) headers['x-api-key'] = BALANCES_API_KEY;
+    if (typeof BALANCES_API_KEY === 'string' && BALANCES_API_KEY.length) headers['x-api-key'] = BALANCES_API_KEY;
 
     const res = await fetch(fetchUrl, {
       cache: 'no-store',
@@ -131,23 +124,7 @@ const load = async () => {
     }
 
     // Show health status if available
-    // If a health URL is provided, fetch it separately (do not override existing state.health if absent)
-    if (healthUrlVal) {
-      try {
-        const hres = await fetch(healthUrlVal, { cache: 'no-store', headers });
-        if (hres.ok) {
-          try {
-            state.health = await hres.json();
-          } catch (e) {
-            state.health = await hres.text();
-          }
-        } else {
-          state.health = `HTTP ${hres.status}`;
-        }
-      } catch (he) {
-        state.health = he?.message || String(he);
-      }
-    }
+    // health is taken from the balances response when available
 
     try {
       const healthEl = qs('#healthStatus') || (() => {
@@ -262,31 +239,6 @@ const load = async () => {
 if (searchEl) searchEl.addEventListener('input', render);
 if (sortEl) sortEl.addEventListener('change', render);
 
-// Populate API input defaults and wire up test button
-try {
-  const balancesUrlInput = qs('#balancesUrlInput');
-  const healthUrlInput = qs('#healthUrlInput');
-  const apiKeyInput = qs('#apiKeyInput');
-  const balancesDefault = (typeof BALANCES_API_URL === 'string' && BALANCES_API_URL.length)
-    ? (BALANCES_API_URL.endsWith('/') ? BALANCES_API_URL + 'balances' : BALANCES_API_URL + '/balances')
-    : '';
-  const healthDefault = (typeof BALANCES_API_URL === 'string' && BALANCES_API_URL.length)
-    ? (BALANCES_API_URL.endsWith('/') ? BALANCES_API_URL + 'health' : BALANCES_API_URL + '/health')
-    : '';
-  if (balancesUrlInput) balancesUrlInput.value = balancesDefault || BALANCES_API_URL || '';
-  if (healthUrlInput) healthUrlInput.value = healthDefault;
-  if (apiKeyInput) apiKeyInput.value = typeof BALANCES_API_KEY === 'string' ? BALANCES_API_KEY : '';
-  const apiTestBtn = qs('#apiTestBtn');
-  if (apiTestBtn) apiTestBtn.addEventListener('click', async () => {
-    try {
-      await load();
-      if (typeof toast === 'function') toast("Test effectué.");
-    } catch (err) {
-      if (typeof toast === 'function') toast("Test échoué.");
-    }
-  });
-} catch (e) {
-  // ignore
-}
+// Inputs removed — use configured `BALANCES_API_URL` and `BALANCES_API_KEY`.
 
 load();
