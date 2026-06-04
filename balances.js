@@ -27,8 +27,8 @@ const getCurrentBalance = (p) => normalizeBalance(p?.currentBalance ?? p?.curren
 const getLifetimeBalance = (p) => normalizeBalance(p?.lifetimeBalance ?? p?.lifetime ?? p?.totalBalance ?? p?.total ?? p?.allTimeBalance ?? p?.all_time_balance ?? p?.lifetime_balance ?? p?.total_balance ?? p?.all_time ?? p?.lifetime);
 
 const byName = (a, b) => (a.name || '').localeCompare(b.name || '', undefined, { sensitivity: 'base' });
-const byBalanceDesc = (a, b) => (b.currentBalance ?? 0) - (a.currentBalance ?? 0);
-const byBalanceAsc = (a, b) => (a.currentBalance ?? 0) - (b.currentBalance ?? 0);
+const byBalanceDesc = (a, b) => (Number.isFinite(b.currentBalance) ? b.currentBalance : 0) - (Number.isFinite(a.currentBalance) ? a.currentBalance : 0);
+const byBalanceAsc = (a, b) => (Number.isFinite(a.currentBalance) ? a.currentBalance : 0) - (Number.isFinite(b.currentBalance) ? b.currentBalance : 0);
 
 const state = {
   raw: null,
@@ -68,8 +68,8 @@ const render = () => {
   tableRowsEl.innerHTML = list
     .map((p) => {
       const name = String(p.name ?? '');
-      const current = Number.isFinite(p.currentBalance) ? p.currentBalance : 0;
-      const lifetime = Number.isFinite(p.lifetimeBalance) ? p.lifetimeBalance : 0;
+      const current = Number.isFinite(p.currentBalance) ? p.currentBalance : NaN;
+      const lifetime = Number.isFinite(p.lifetimeBalance) ? p.lifetimeBalance : NaN;
       return `
         <tr>
           <td style="font-weight:900;">${escapeHtml(name)}</td>
@@ -140,8 +140,8 @@ const load = async () => {
         const life = getLifetimeBalance(p);
         return {
           name: getPlayerName(p),
-          currentBalance: Number.isFinite(cur) ? cur : 0,
-          lifetimeBalance: Number.isFinite(life) ? life : 0,
+          currentBalance: Number.isFinite(cur) ? cur : NaN,
+          lifetimeBalance: Number.isFinite(life) ? life : NaN,
         };
       })
       .filter((p) => p.name.length);
@@ -236,8 +236,8 @@ const load = async () => {
             const life = getLifetimeBalance(p);
             return {
               name: getPlayerName(p),
-              currentBalance: Number.isFinite(cur) ? cur : 0,
-              lifetimeBalance: Number.isFinite(life) ? life : 0,
+              currentBalance: Number.isFinite(cur) ? cur : NaN,
+              lifetimeBalance: Number.isFinite(life) ? life : NaN,
             };
           })
           .filter((p) => p.name.length);
