@@ -155,11 +155,11 @@ const escapeHtml = (s) => String(s)
 // IMPORTANT: the endpoint must allow browser requests (CORS).
 const BALANCES_API_URL = 'http://193.70.34.101:20036/balances';
 const LOCAL_BALANCES_URL = 'balances.json';
-const USE_LOCAL_FIRST = true;
+const USE_LOCAL_FIRST = false; // Use the API first and only fallback to local balances.json if the API fails.
 
 // IMPORTANT: this is a public frontend. If this key grants access, it will be exposed to anyone.
 // Prefer a server-side proxy in production.
-const BALANCES_API_KEY = '368feea3692ff6070581646deaf1440211f6d2955167ecb45efe985ca06dc3a1' ;
+const BALANCES_API_KEY = '368feea3692ff6070581646deaf1440211f6d2955167ecb45efe985ca06dc3a1';
 
 const loadLocalBalances = async () => {
   const res = await fetch(LOCAL_BALANCES_URL, { cache: 'no-store' });
