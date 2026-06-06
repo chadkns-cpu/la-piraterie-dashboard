@@ -19,3 +19,25 @@ This folder contains a static website ready to publish on **GitHub Pages**.
 - Update KPIs/status later by connecting them to your bot API.
 - Replace the command list under **Commands** with your real slash commands.
 
+## Sync balances.json from the API
+This project uses a local `balances.json` fallback file for the balances page.
+
+To refresh local balances data from the API, run:
+
+```bash
+node sync-balances.js
+```
+
+To run it automatically every X seconds, use:
+
+```bash
+node sync-balances.js --interval=300
+```
+
+The script fetches from the configured API endpoint and rewrites `balances.json` with entries keyed by player ID, containing:
+- `username`
+- `current`
+- `lifetime`
+
+> Requires Node.js v18+ for built-in `fetch` support.
+

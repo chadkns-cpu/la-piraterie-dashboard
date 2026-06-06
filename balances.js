@@ -40,17 +40,19 @@ const normalizePlayerMap = (value) => {
 };
 
 const extractRawBalances = (data) => {
-  return Array.isArray(data?.balances)
-    ? data.balances
-    : Array.isArray(data?.players)
-      ? data.players
-      : Array.isArray(data?.data)
-        ? data.data
-        : isPlayerMap(data?.players)
-          ? normalizePlayerMap(data.players)
-          : isPlayerMap(data)
-            ? normalizePlayerMap(data)
-            : [];
+  return Array.isArray(data)
+    ? data
+    : Array.isArray(data?.balances)
+      ? data.balances
+      : Array.isArray(data?.players)
+        ? data.players
+        : Array.isArray(data?.data)
+          ? data.data
+          : isPlayerMap(data?.players)
+            ? normalizePlayerMap(data.players)
+            : isPlayerMap(data)
+              ? normalizePlayerMap(data)
+              : [];
 };
 
 const getNameMapEntry = (key) => {
@@ -77,7 +79,15 @@ const getPlayerName = (p) => {
   if (p.user && typeof p.user.name === 'string' && p.user.name.trim()) return p.user.name.trim();
 
   const rawName = typeof p.name === 'string' ? p.name.trim() : '';
-  const rawId = typeof p.id === 'string' ? p.id.trim() : (typeof p.id === 'number' ? String(p.id) : '');
+  const rawId = typeof p.id === 'string'
+    ? p.id.trim()
+    : typeof p.userId === 'string'
+      ? p.userId.trim()
+      : typeof p.id === 'number'
+        ? String(p.id)
+        : typeof p.userId === 'number'
+          ? String(p.userId)
+          : '';
   const candidate = rawName || rawId;
   if (!candidate) return '';
   const mapEntry = getNameMapEntry(candidate);
@@ -220,7 +230,15 @@ const load = async () => {
     state.balances = rawBalances
       .map((p) => {
         const rawName = typeof p.name === 'string' ? p.name.trim() : '';
-        const rawId = typeof p.id === 'string' ? p.id.trim() : (typeof p.id === 'number' ? String(p.id) : '');
+        const rawId = typeof p.id === 'string'
+          ? p.id.trim()
+          : typeof p.userId === 'string'
+            ? p.userId.trim()
+            : typeof p.id === 'number'
+              ? String(p.id)
+              : typeof p.userId === 'number'
+                ? String(p.userId)
+                : '';
         const candidate = rawName || rawId;
         const mapEntry = getNameMapEntry(candidate);
         const cur = getCurrentBalance(p);
