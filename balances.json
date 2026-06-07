@@ -46,12 +46,12 @@
   },
   "375917078831693824": {
     "username": "ChadBLOOP",
-    "current": 2781047,
+    "current": 0,
     "lifetime": 3795047
   },
   "403875742976442378": {
     "username": "Hairpes",
-    "current": 10403122,
+    "current": 0,
     "lifetime": 10403122
   },
   "489122958837809153": {
@@ -61,8 +61,13 @@
   },
   "518454120374468618": {
     "username": "Darkledger",
-    "current": 8822667,
+    "current": 0,
     "lifetime": 8822667
+  },
+  "541654092779356200": {
+    "username": "Salta",
+    "current": 0,
+    "lifetime": 0
   },
   "594270064392536090": {
     "username": "WyShirong",
@@ -78,5 +83,10 @@
     "username": "Laraclette",
     "current": 4087172,
     "lifetime": 4087172
+  },
+  "779856977920524288": {
+    "username": "Grujugd",
+    "current": 0,
+    "lifetime": 0
   }
 }
