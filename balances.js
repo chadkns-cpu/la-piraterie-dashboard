@@ -15,7 +15,7 @@ const normalizeBalance = (value) => {
 };
 
 const NAME_MAP_URL = 'player-names.json';
-const REFRESH_INTERVAL_MS = 30000;
+const REFRESH_INTERVAL_MS = 5 * 60 * 1000; // 5 minutes
 let nameMap = {};
 
 const isDiscordId = (value) => typeof value === 'string' && /^[0-9]{17,20}$/.test(value);
@@ -177,16 +177,24 @@ const loadLocalBalances = async () => {
   return res.json();
 };
 
+const buildApiUrl = () => {
+  return BALANCES_API_URL.includes('?')
+    ? `${BALANCES_API_URL}&_=${Date.now()}`
+    : `${BALANCES_API_URL}?_=${Date.now()}`;
+};
+
 // Some APIs return a different shape (or require a proxy). We keep the UI resilient.
 // If your endpoint doesn’t return { players: [...] }, adjust the parsing below in `load()`.
 
 
-const load = async () => {
+const load = async (options = { apiOnly: false }) => {
   try {
     nameMap = await loadNameMap();
     let data;
 
-    if (USE_LOCAL_FIRST) {
+    const apiOnly = Boolean(options.apiOnly);
+
+    if (USE_LOCAL_FIRST && !apiOnly) {
       try {
         data = await loadLocalBalances();
         if (generatedAtTextEl) generatedAtTextEl.textContent = 'Loaded local balances.json';
@@ -196,7 +204,7 @@ const load = async () => {
     }
 
     if (!data) {
-      const fetchUrl = BALANCES_API_URL;
+      const fetchUrl = buildApiUrl();
       const headers = {};
       if (typeof BALANCES_API_KEY === 'string' && BALANCES_API_KEY.length) headers['x-api-key'] = BALANCES_API_KEY;
 
@@ -376,9 +384,10 @@ const setupRefresh = () => {
     refreshBtnEl.addEventListener('click', async () => {
       refreshBtnEl.disabled = true;
       const originalText = refreshBtnEl.textContent;
-      refreshBtnEl.textContent = 'Refreshing…';
+      refreshBtnEl.textContent = 'Actualisation…';
       try {
-        await load();
+        await load({ apiOnly: true });
+        if (typeof toast === 'function') toast('Actualisé depuis l’API.');
       } finally {
         refreshBtnEl.disabled = false;
         refreshBtnEl.textContent = originalText;
@@ -388,7 +397,7 @@ const setupRefresh = () => {
 
   if (typeof window !== 'undefined' && typeof window.setInterval === 'function') {
     refreshTimer = window.setInterval(() => {
-      load();
+      load({ apiOnly: true });
     }, REFRESH_INTERVAL_MS);
   }
 };
