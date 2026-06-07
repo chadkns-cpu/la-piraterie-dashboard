@@ -68,6 +68,16 @@ const getUsername = (entry) => {
 const getCurrentBalance = (entry) => normalizeBalance(entry?.current ?? entry?.currentBalance ?? entry?.balance ?? entry?.amount);
 const getLifetimeBalance = (entry) => normalizeBalance(entry?.lifetime ?? entry?.lifetimeBalance ?? entry?.total ?? entry?.totalBalance);
 
+const readExistingBalances = async () => {
+  try {
+    const text = await fs.readFile(OUTPUT_FILE, 'utf8');
+    const data = JSON.parse(text);
+    return isObject(data) ? data : {};
+  } catch {
+    return {};
+  }
+};
+
 const main = async () => {
   if (typeof fetch !== 'function') {
     throw new Error('Node.js v18+ is required for built-in fetch support.');
@@ -88,6 +98,7 @@ const main = async () => {
     throw new Error('API response does not contain a recognized balances array.');
   }
 
+  const existingBalances = await readExistingBalances();
   const output = {};
   let skipped = 0;
 
@@ -98,7 +109,14 @@ const main = async () => {
       continue;
     }
 
-    const username = getUsername(entry) || `unknown_${id}`;
+    let username = getUsername(entry);
+    if (!username && existingBalances[id] && typeof existingBalances[id].username === 'string' && existingBalances[id].username.trim()) {
+      username = existingBalances[id].username.trim();
+    }
+    if (!username) {
+      username = `unknown_${id}`;
+    }
+
     const current = getCurrentBalance(entry);
     const lifetime = getLifetimeBalance(entry);
 

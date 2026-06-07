@@ -95,6 +95,42 @@ const getPlayerName = (p) => {
   return candidate;
 };
 
+const getPlayerId = (p) => {
+  if (!p || typeof p !== 'object') return '';
+  if (typeof p.id === 'string' && p.id.trim()) return p.id.trim();
+  if (typeof p.userId === 'string' && p.userId.trim()) return p.userId.trim();
+  if (typeof p.id === 'number' && Number.isFinite(p.id)) return String(p.id);
+  if (typeof p.userId === 'number' && Number.isFinite(p.userId)) return String(p.userId);
+  return '';
+};
+
+const getRawUsername = (p) => {
+  if (!p || typeof p !== 'object') return '';
+  if (typeof p.username === 'string' && p.username.trim()) return p.username.trim();
+  if (typeof p.name === 'string' && p.name.trim()) return p.name.trim();
+  if (p.user && typeof p.user.username === 'string' && p.user.username.trim()) return p.user.username.trim();
+  if (p.user && typeof p.user.name === 'string' && p.user.name.trim()) return p.user.name.trim();
+  return '';
+};
+
+const loadSavedUsernames = async () => {
+  try {
+    const data = await loadLocalBalances();
+    const rawBalances = extractRawBalances(data);
+    const map = {};
+    for (const entry of rawBalances) {
+      const id = getPlayerId(entry);
+      const username = getRawUsername(entry);
+      if (id && username) {
+        map[id] = username;
+      }
+    }
+    return map;
+  } catch {
+    return {};
+  }
+};
+
 // Prefer the exact API fields: username / current / lifetime
 const getCurrentBalance = (p) => normalizeBalance(p?.current ?? p?.currentBalance ?? p?.balance ?? p?.amount);
 const getLifetimeBalance = (p) => normalizeBalance(p?.lifetime ?? p?.lifetimeBalance ?? p?.total ?? p?.totalBalance);
@@ -190,6 +226,7 @@ const buildApiUrl = () => {
 const load = async (options = { apiOnly: false }) => {
   try {
     nameMap = await loadNameMap();
+    const savedUsernames = await loadSavedUsernames().catch(() => ({}));
     let data;
 
     const apiOnly = Boolean(options.apiOnly);
@@ -237,22 +274,15 @@ const load = async (options = { apiOnly: false }) => {
 
     state.balances = rawBalances
       .map((p) => {
-        const rawName = typeof p.name === 'string' ? p.name.trim() : '';
-        const rawId = typeof p.id === 'string'
-          ? p.id.trim()
-          : typeof p.userId === 'string'
-            ? p.userId.trim()
-            : typeof p.id === 'number'
-              ? String(p.id)
-              : typeof p.userId === 'number'
-                ? String(p.userId)
-                : '';
-        const candidate = rawName || rawId;
-        const mapEntry = getNameMapEntry(candidate);
+        const id = getPlayerId(p);
+        const rawUsername = getRawUsername(p);
+        const name = rawUsername || savedUsernames[id] || getPlayerName(p);
         const cur = getCurrentBalance(p);
         const life = getLifetimeBalance(p);
+        const candidate = name || id;
+        const mapEntry = getNameMapEntry(candidate);
         return {
-          name: getPlayerName(p),
+          name,
           currentBalance: Number.isFinite(cur) ? cur : (mapEntry?.current ?? NaN),
           lifetimeBalance: Number.isFinite(life) ? life : (mapEntry?.lifetime ?? NaN),
         };
