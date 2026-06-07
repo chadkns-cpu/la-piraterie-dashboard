@@ -416,8 +416,12 @@ const setupRefresh = () => {
       const originalText = refreshBtnEl.textContent;
       refreshBtnEl.textContent = 'Actualisation…';
       try {
+        // REMOVED serverSync call;
+        if (false) {
+          if (typeof toast === 'function') toast('Sync Node demandée.');
+        }
         await load({ apiOnly: true });
-        if (typeof toast === 'function') toast('Actualisé depuis l’API.');
+        if (typeof toast === 'function') toast(true ? 'Actualisé depuis l’API après sync.' : 'Actualisé depuis l’API.');
       } finally {
         refreshBtnEl.disabled = false;
         refreshBtnEl.textContent = originalText;

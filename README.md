@@ -41,3 +41,36 @@ The script fetches from the configured API endpoint and rewrites `balances.json`
 
 > Requires Node.js v18+ for built-in `fetch` support.
 
+## Run a local server for automatic refresh
+
+If you want the balance page to trigger `sync-balances.js` automatically when you click **Actualiser**, use the local server:
+
+```bash
+node server.js
+```
+
+Then open the page in your browser at:
+
+```text
+http://localhost:3000/balances.html
+```
+
+The page will try to call the local endpoint `/sync-balances` before reloading API data.
+
+> This only works when the page is served by the local Node server, not from `file://` or GitHub Pages.
+
+## Automatic refresh on GitHub Pages
+
+If you're using **GitHub Pages**, configure **GitHub Actions** to run `sync-balances.js` automatically:
+
+1. Commit the workflow file at `.github/workflows/sync-balances.yml` to your repo.
+2. GitHub will automatically run it every 5 minutes (or on manual trigger).
+3. The workflow updates `balances.json` and commits it to your repo.
+4. GitHub Pages will serve the updated file.
+
+To trigger a manual run:
+- Go to your repo on GitHub
+- Click the **Actions** tab
+- Click **Sync Balances** workflow
+- Click **Run workflow**
+
